@@ -60,6 +60,15 @@ void show_dir(t_core *core, t_player player, int map[10][10])
 }
 
 
+int is_wall(double ay, double ax, int map[10][10])
+{
+    if (ay / 64 < 0 || ax / 64 < 0 || ay / 64 > 9 || ax / 64 > 9)
+        return (1);
+    if (map[(int)ay / 64][(int)ax / 64] == 1)
+        return (1);
+    return (0);
+}
+
 void dist_horizontal(int map[10][10], t_player player, double angle, t_core *core)
 {
     double ay;
@@ -67,14 +76,13 @@ void dist_horizontal(int map[10][10], t_player player, double angle, t_core *cor
     double ya;
     double xa;
 
-    printf("angle = %f\n", angle);
     if (sin(angle) > 0)
     {
         ay = floor(player.pos.y / 64) * 64 - 0.0001;
         ax = player.pos.x + (player.pos.y - ay) / tan(angle);
         ya = -64;
         xa = - 64 / tan(angle);
-        while (map[(int)(ay / 64)][(int)(ax / 64)] != 1)
+        while (is_wall(ay, ax, map) != 1)
         {
             ay += ya;
             ax += xa;
@@ -89,13 +97,50 @@ void dist_horizontal(int map[10][10], t_player player, double angle, t_core *cor
         ax = player.pos.x + (player.pos.y - ay) / tan(angle);
         ya = 64;
         xa = 64 / tan(angle);
-        while (map[(int)(ay / 64)][(int)(ax / 64)] != 1)
+        while (is_wall(ay, ax, map) != 1)
         {
             ay += ya;
             ax += xa;
         }
         printf("ay = %f, ax = %f\n", ay / 64, ax / 64);
         plot_pixel(core, vec2(ax, ay), 0xFF0000);
+    }
+}
+
+void dist_vert(int map[10][10], t_player player, double angle, t_core *core)
+{
+    double bx;
+    double by;
+    double xa;
+    double ya;
+
+    if (cos(angle) > 0)
+    {
+        bx = floor(player.pos.x / 64) * 64;
+        by = -64 * tan(angle);
+        ya = player.pos.y + (player.pos.x - bx) * tan(angle);
+        xa = 64;
+        while (is_wall(by, bx, map) != 1)
+        {
+            by += ya;
+            bx += xa;
+        }
+        printf("by = %f, bx = %f\n", by / 64, bx / 64);
+        plot_pixel(core, vec2(bx, by), 0xFF0F00);
+    }
+    else
+    {
+        bx = floor(player.pos.x / 64) * 64 - 0.0001;
+        by = 64 * tan(angle);
+        ya = player.pos.y + (player.pos.x - bx) * tan(angle);
+        xa = -64;
+        while (is_wall(by, bx, map) != 1)
+        {
+            by += ya;
+            bx += xa;
+        }
+        printf("by = %f, bx = %f\n", by / 64, bx / 64);
+        plot_pixel(core, vec2(bx, by), 0xFF0F00);
     }
 }
 

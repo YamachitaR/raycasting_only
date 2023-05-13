@@ -50,6 +50,7 @@ int main (void)
     show_dir(&core, player, map);
     printf("player pos: %d %d\n", player.pos.x / 64, player.pos.y / 64);
     dist_horizontal(map, player, (PI / 6), &core);
+    dist_vert(map, player, (PI / 6), &core);
     mlx_put_image_to_window(core.mlx, core.win, core.img, 0, 0);
     mlx_hook(core.win, 17, 0, close_win, &core);
     mlx_key_hook(core.win, &get_key, &core);
