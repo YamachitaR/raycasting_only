@@ -64,7 +64,7 @@ int is_wall(double ay, double ax, int map[10][10])
 {
     if (ay / 64 < 0 || ax / 64 < 0 || ay / 64 > 9 || ax / 64 > 9)
         return (1);
-    if (map[(int)ay / 64][(int)ax / 64] == 1)
+    if (map[(int)floor(ay / 64)][(int)floor(ax / 64)] == 1)
         return (1);
     return (0);
 }
@@ -81,13 +81,15 @@ void dist_horizontal(int map[10][10], t_player player, double angle, t_core *cor
         ay = floor(player.pos.y / 64) * 64 - 0.0001;
         ax = player.pos.x + (player.pos.y - ay) / tan(angle);
         ya = -64;
-        xa = - 64 / tan(angle);
+        xa =  64 / tan(angle);
+
+    
         while (is_wall(ay, ax, map) != 1)
         {
             ay += ya;
             ax += xa;
         }
-        printf("ay = %f, ax = %f\n", ay / 64, ax / 64);
+        printf("ay = %f, ax = %f, angle=%f\n", ay / 64, ax / 64, ay/ax);
         plot_pixel(core, vec2(ax, ay), 0xFF0000);
     }
     else
@@ -96,14 +98,14 @@ void dist_horizontal(int map[10][10], t_player player, double angle, t_core *cor
         ay = floor(player.pos.y / 64) * 64 + 64;
         ax = player.pos.x + (player.pos.y - ay) / tan(angle);
         ya = 64;
-        xa = 64 / tan(angle);
+        xa = -64 / tan(angle);
         while (is_wall(ay, ax, map) != 1)
         {
             ay += ya;
             ax += xa;
         }
-        printf("ay = %f, ax = %f\n", ay / 64, ax / 64);
-        plot_pixel(core, vec2(ax, ay), 0xFF0000);
+        printf("ay = %f, ax = %f, angle=%f\n", ay / 64, ax / 64, ay/ax);
+
     }
 }
 
@@ -126,7 +128,7 @@ void dist_vert(int map[10][10], t_player player, double angle, t_core *core)
             bx += xa;
         }
         printf("by = %f, bx = %f\n", by / 64, bx / 64);
-        plot_pixel(core, vec2(bx, by), 0xFF0F00);
+        plot_pixel(core, vec2(bx, by), 0xFFFF00);
     }
     else
     {
@@ -140,7 +142,7 @@ void dist_vert(int map[10][10], t_player player, double angle, t_core *core)
             bx += xa;
         }
         printf("by = %f, bx = %f\n", by / 64, bx / 64);
-        plot_pixel(core, vec2(bx, by), 0xFF0F00);
+        plot_pixel(core, vec2(bx, by), 0xFFFF00);
     }
 }
 
@@ -151,6 +153,28 @@ t_vec2 vec2(int x, int y)
     vec.x = x;
     vec.y = y;
     return (vec);
+}
+
+void rays(t_core *core, t_player player, int map[10][10])
+{
+    double fov;
+    double angle;
+    double angle_init;
+    int n_rays;
+    int i;
+
+    fov = 60 * (PI / 180);
+    n_rays = 640;
+    angle = player.angle - (fov / 2) / n_rays;
+    angle_init = angle;
+    i = 0;
+    while (i < 640)
+    {
+        dist_horizontal(map, player, angle, core);
+        i++;
+        angle += angle_init;
+    }
+    printf("i = %d\n", i);
 }
 
 void create_rectangle(t_core *core, t_vec2 pos, t_vec2 size, int color)

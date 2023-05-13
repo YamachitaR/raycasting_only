@@ -27,7 +27,7 @@ typedef struct s_core
 typedef struct s_player
 {
     t_vec2 pos;
-    double dir;
+    double angle;
 }   t_player;
 
 void plot_pixel(t_core *core, t_vec2 pos, int color);
@@ -38,4 +38,5 @@ void   print_player(t_core *core, t_player player);
 void show_dir(t_core *core, t_player player, int map[10][10]);
 void dist_horizontal(int map[10][10], t_player player, double angle, t_core *core);
 void dist_vert(int map[10][10], t_player player, double angle, t_core *core);
+void rays(t_core *core, t_player player, int map[10][10]);
 t_vec2 vec2(int x, int y);
